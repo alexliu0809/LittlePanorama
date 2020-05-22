@@ -1,0 +1,24 @@
+syntax = "proto3";
+option java_package = "edu.jhu.order.deephealth";
+
+package idl;
+
+import "google/protobuf/timestamp.proto";
+
+import "health.proto";
+
+// Definition for Panoram
+service PanoramaService{
+  // Register a local observer to the health service.
+  // Must be called before SubmitReport.
+  rpc Register(RegisterRequest) returns (RegisterReply) {}
+}
+
+message RegisterRequest {
+  string module = 1;   // service module this observer belongs to 
+  string observer = 2;
+}
+
+message RegisterReply {
+  uint64 handle = 1;  
+}
