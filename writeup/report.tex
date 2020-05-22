@@ -1,0 +1,30 @@
+\documentclass[sigconf,anonymous=false]{acmart}
+
+
+\settopmatter{printacmref=false, printccs=false, printfolios=false} % We want page numbers on submissions
+\definecolor{Orange}{rgb}{1,0.5,0}
+\usepackage{xcolor}
+\newcommand{\todo}[1]{\textsf{\textbf{\textcolor{Orange}{[[#1]]}}}}
+\usepackage{graphicx} %Loading the package
+\graphicspath{{../measurement/results/}}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\begin{document}
+\title{Replicating ``Capturing and Enhancing In Situ System Observability
+for Failure Detection''}
+\author{Enze Liu}
+\affiliation{%
+  \institution{University of California, San Diego}
+}
+\email{e7liu@eng.ucsd.edu}
+\input{abs}
+\maketitle
+
+\input{body} % TODO: replace with your brilliant paper!
+
+\clearpage
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{reference}
+
+\end{document}
