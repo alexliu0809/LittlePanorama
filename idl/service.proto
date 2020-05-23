@@ -8,10 +8,63 @@ import "google/protobuf/timestamp.proto";
 import "health.proto";
 
 // Definition for Panoram
-service PanoramaService{
+service HealthService{
+
+  // Add a subject to the observing subject list
+  //rpc Observe(ObserveRequest) returns (ObserveReply) {}
+
+	// Stop observing a particular subject, all the reports
+	// concerning this subject will be ignored
+  //rpc StopObserving(ObserveRequest) returns (ObserveReply) {}
+
+  // Learn a report from a peer 
+  //rpc LearnReport(LearnReportRequest) returns (LearnReportReply) {}
+
   // Register a local observer to the health service.
   // Must be called before SubmitReport.
   rpc Register(RegisterRequest) returns (RegisterReply) {}
+
+	// Submit a report to the view storage
+  rpc SubmitReport(SubmitReportRequest) returns (SubmitReportReply) {}
+
+  // Query the latest raw health report of an entity
+  rpc GetLatestReport(GetReportRequest) returns (Report) {}
+
+	// Query all raw health reports from different observers about an entity
+  rpc GetPanorama(GetPanoramaRequest) returns (Panorama) {}
+
+	// Query all raw health report from a single observer about an entity
+  rpc GetView(GetViewRequest) returns (View) {}
+
+	// Query a summarized health report from different observers about an entity
+  rpc GetInference(GetInferenceRequest) returns (Inference) {}
+
+  // Query the list of all subjects that have been observed
+  // rpc GetObservedSubjects(Empty) returns (GetObservedSubjectsReply) {}
+
+  // Dump all the raw health reports about all observed entities
+  // rpc DumpPanorama(Empty) returns (DumpPanoramaReply) {}
+
+  // Dump all the inferred health reports about all observed entities
+  // rpc DumpInference(Empty) returns (DumpInferenceReply) {}
+
+  // Ping request to test liveness of a health server
+  // rpc Ping(PingRequest) returns (PingReply) {}
+
+  // Get all the peers (other servers) of this DH server
+  rpc GetPeers(Empty) returns (GetPeerReply) {}
+
+  // Get the ID of this health server
+  rpc GetServerId(Empty) returns (Peer) {}
+
+}
+
+message Empty {
+}
+
+message Peer {
+  string id = 1;
+  string addr = 2;
 }
 
 message RegisterRequest {
@@ -21,4 +74,39 @@ message RegisterRequest {
 
 message RegisterReply {
   uint64 handle = 1;  
+}
+
+message SubmitReportRequest {
+  uint64 handle = 1;
+  Report report = 2;
+}
+
+message SubmitReportReply {
+  enum Status {
+    IGNORED = 0;
+    ACCEPTED = 1;
+    FAILED = 2;
+  }
+  Status result = 1;
+}
+
+message GetPanoramaRequest {
+  string subject = 1;
+}
+
+message GetViewRequest {
+  string subject = 1;
+  string observer = 2;
+}
+
+message GetReportRequest {
+  string subject = 1;
+}
+
+message GetInferenceRequest {
+  string subject = 1;
+}
+
+message GetPeerReply {
+  repeated Peer peers = 3; // all the peers 
 }

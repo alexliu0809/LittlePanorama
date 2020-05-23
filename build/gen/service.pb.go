@@ -24,6 +24,108 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
+type SubmitReportReply_Status int32
+
+const (
+	SubmitReportReply_IGNORED  SubmitReportReply_Status = 0
+	SubmitReportReply_ACCEPTED SubmitReportReply_Status = 1
+	SubmitReportReply_FAILED   SubmitReportReply_Status = 2
+)
+
+var SubmitReportReply_Status_name = map[int32]string{
+	0: "IGNORED",
+	1: "ACCEPTED",
+	2: "FAILED",
+}
+var SubmitReportReply_Status_value = map[string]int32{
+	"IGNORED":  0,
+	"ACCEPTED": 1,
+	"FAILED":   2,
+}
+
+func (x SubmitReportReply_Status) String() string {
+	return proto.EnumName(SubmitReportReply_Status_name, int32(x))
+}
+func (SubmitReportReply_Status) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_service_5c77c446d0a2ff47, []int{5, 0}
+}
+
+type Empty struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Empty) Reset()         { *m = Empty{} }
+func (m *Empty) String() string { return proto.CompactTextString(m) }
+func (*Empty) ProtoMessage()    {}
+func (*Empty) Descriptor() ([]byte, []int) {
+	return fileDescriptor_service_5c77c446d0a2ff47, []int{0}
+}
+func (m *Empty) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Empty.Unmarshal(m, b)
+}
+func (m *Empty) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Empty.Marshal(b, m, deterministic)
+}
+func (dst *Empty) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Empty.Merge(dst, src)
+}
+func (m *Empty) XXX_Size() int {
+	return xxx_messageInfo_Empty.Size(m)
+}
+func (m *Empty) XXX_DiscardUnknown() {
+	xxx_messageInfo_Empty.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Empty proto.InternalMessageInfo
+
+type Peer struct {
+	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Addr                 string   `protobuf:"bytes,2,opt,name=addr,proto3" json:"addr,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *Peer) Reset()         { *m = Peer{} }
+func (m *Peer) String() string { return proto.CompactTextString(m) }
+func (*Peer) ProtoMessage()    {}
+func (*Peer) Descriptor() ([]byte, []int) {
+	return fileDescriptor_service_5c77c446d0a2ff47, []int{1}
+}
+func (m *Peer) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Peer.Unmarshal(m, b)
+}
+func (m *Peer) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Peer.Marshal(b, m, deterministic)
+}
+func (dst *Peer) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Peer.Merge(dst, src)
+}
+func (m *Peer) XXX_Size() int {
+	return xxx_messageInfo_Peer.Size(m)
+}
+func (m *Peer) XXX_DiscardUnknown() {
+	xxx_messageInfo_Peer.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Peer proto.InternalMessageInfo
+
+func (m *Peer) GetId() string {
+	if m != nil {
+		return m.Id
+	}
+	return ""
+}
+
+func (m *Peer) GetAddr() string {
+	if m != nil {
+		return m.Addr
+	}
+	return ""
+}
+
 type RegisterRequest struct {
 	Module               string   `protobuf:"bytes,1,opt,name=module,proto3" json:"module,omitempty"`
 	Observer             string   `protobuf:"bytes,2,opt,name=observer,proto3" json:"observer,omitempty"`
@@ -36,7 +138,7 @@ func (m *RegisterRequest) Reset()         { *m = RegisterRequest{} }
 func (m *RegisterRequest) String() string { return proto.CompactTextString(m) }
 func (*RegisterRequest) ProtoMessage()    {}
 func (*RegisterRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_service_ca72272c16e1aadf, []int{0}
+	return fileDescriptor_service_5c77c446d0a2ff47, []int{2}
 }
 func (m *RegisterRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegisterRequest.Unmarshal(m, b)
@@ -81,7 +183,7 @@ func (m *RegisterReply) Reset()         { *m = RegisterReply{} }
 func (m *RegisterReply) String() string { return proto.CompactTextString(m) }
 func (*RegisterReply) ProtoMessage()    {}
 func (*RegisterReply) Descriptor() ([]byte, []int) {
-	return fileDescriptor_service_ca72272c16e1aadf, []int{1}
+	return fileDescriptor_service_5c77c446d0a2ff47, []int{3}
 }
 func (m *RegisterReply) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_RegisterReply.Unmarshal(m, b)
@@ -108,9 +210,301 @@ func (m *RegisterReply) GetHandle() uint64 {
 	return 0
 }
 
+type SubmitReportRequest struct {
+	Handle               uint64   `protobuf:"varint,1,opt,name=handle,proto3" json:"handle,omitempty"`
+	Report               *Report  `protobuf:"bytes,2,opt,name=report,proto3" json:"report,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *SubmitReportRequest) Reset()         { *m = SubmitReportRequest{} }
+func (m *SubmitReportRequest) String() string { return proto.CompactTextString(m) }
+func (*SubmitReportRequest) ProtoMessage()    {}
+func (*SubmitReportRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_service_5c77c446d0a2ff47, []int{4}
+}
+func (m *SubmitReportRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SubmitReportRequest.Unmarshal(m, b)
+}
+func (m *SubmitReportRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SubmitReportRequest.Marshal(b, m, deterministic)
+}
+func (dst *SubmitReportRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SubmitReportRequest.Merge(dst, src)
+}
+func (m *SubmitReportRequest) XXX_Size() int {
+	return xxx_messageInfo_SubmitReportRequest.Size(m)
+}
+func (m *SubmitReportRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_SubmitReportRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SubmitReportRequest proto.InternalMessageInfo
+
+func (m *SubmitReportRequest) GetHandle() uint64 {
+	if m != nil {
+		return m.Handle
+	}
+	return 0
+}
+
+func (m *SubmitReportRequest) GetReport() *Report {
+	if m != nil {
+		return m.Report
+	}
+	return nil
+}
+
+type SubmitReportReply struct {
+	Result               SubmitReportReply_Status `protobuf:"varint,1,opt,name=result,proto3,enum=idl.SubmitReportReply_Status" json:"result,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}                 `json:"-"`
+	XXX_unrecognized     []byte                   `json:"-"`
+	XXX_sizecache        int32                    `json:"-"`
+}
+
+func (m *SubmitReportReply) Reset()         { *m = SubmitReportReply{} }
+func (m *SubmitReportReply) String() string { return proto.CompactTextString(m) }
+func (*SubmitReportReply) ProtoMessage()    {}
+func (*SubmitReportReply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_service_5c77c446d0a2ff47, []int{5}
+}
+func (m *SubmitReportReply) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SubmitReportReply.Unmarshal(m, b)
+}
+func (m *SubmitReportReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SubmitReportReply.Marshal(b, m, deterministic)
+}
+func (dst *SubmitReportReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SubmitReportReply.Merge(dst, src)
+}
+func (m *SubmitReportReply) XXX_Size() int {
+	return xxx_messageInfo_SubmitReportReply.Size(m)
+}
+func (m *SubmitReportReply) XXX_DiscardUnknown() {
+	xxx_messageInfo_SubmitReportReply.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_SubmitReportReply proto.InternalMessageInfo
+
+func (m *SubmitReportReply) GetResult() SubmitReportReply_Status {
+	if m != nil {
+		return m.Result
+	}
+	return SubmitReportReply_IGNORED
+}
+
+type GetPanoramaRequest struct {
+	Subject              string   `protobuf:"bytes,1,opt,name=subject,proto3" json:"subject,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetPanoramaRequest) Reset()         { *m = GetPanoramaRequest{} }
+func (m *GetPanoramaRequest) String() string { return proto.CompactTextString(m) }
+func (*GetPanoramaRequest) ProtoMessage()    {}
+func (*GetPanoramaRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_service_5c77c446d0a2ff47, []int{6}
+}
+func (m *GetPanoramaRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetPanoramaRequest.Unmarshal(m, b)
+}
+func (m *GetPanoramaRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetPanoramaRequest.Marshal(b, m, deterministic)
+}
+func (dst *GetPanoramaRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetPanoramaRequest.Merge(dst, src)
+}
+func (m *GetPanoramaRequest) XXX_Size() int {
+	return xxx_messageInfo_GetPanoramaRequest.Size(m)
+}
+func (m *GetPanoramaRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetPanoramaRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetPanoramaRequest proto.InternalMessageInfo
+
+func (m *GetPanoramaRequest) GetSubject() string {
+	if m != nil {
+		return m.Subject
+	}
+	return ""
+}
+
+type GetViewRequest struct {
+	Subject              string   `protobuf:"bytes,1,opt,name=subject,proto3" json:"subject,omitempty"`
+	Observer             string   `protobuf:"bytes,2,opt,name=observer,proto3" json:"observer,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetViewRequest) Reset()         { *m = GetViewRequest{} }
+func (m *GetViewRequest) String() string { return proto.CompactTextString(m) }
+func (*GetViewRequest) ProtoMessage()    {}
+func (*GetViewRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_service_5c77c446d0a2ff47, []int{7}
+}
+func (m *GetViewRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetViewRequest.Unmarshal(m, b)
+}
+func (m *GetViewRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetViewRequest.Marshal(b, m, deterministic)
+}
+func (dst *GetViewRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetViewRequest.Merge(dst, src)
+}
+func (m *GetViewRequest) XXX_Size() int {
+	return xxx_messageInfo_GetViewRequest.Size(m)
+}
+func (m *GetViewRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetViewRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetViewRequest proto.InternalMessageInfo
+
+func (m *GetViewRequest) GetSubject() string {
+	if m != nil {
+		return m.Subject
+	}
+	return ""
+}
+
+func (m *GetViewRequest) GetObserver() string {
+	if m != nil {
+		return m.Observer
+	}
+	return ""
+}
+
+type GetReportRequest struct {
+	Subject              string   `protobuf:"bytes,1,opt,name=subject,proto3" json:"subject,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetReportRequest) Reset()         { *m = GetReportRequest{} }
+func (m *GetReportRequest) String() string { return proto.CompactTextString(m) }
+func (*GetReportRequest) ProtoMessage()    {}
+func (*GetReportRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_service_5c77c446d0a2ff47, []int{8}
+}
+func (m *GetReportRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetReportRequest.Unmarshal(m, b)
+}
+func (m *GetReportRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetReportRequest.Marshal(b, m, deterministic)
+}
+func (dst *GetReportRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetReportRequest.Merge(dst, src)
+}
+func (m *GetReportRequest) XXX_Size() int {
+	return xxx_messageInfo_GetReportRequest.Size(m)
+}
+func (m *GetReportRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetReportRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetReportRequest proto.InternalMessageInfo
+
+func (m *GetReportRequest) GetSubject() string {
+	if m != nil {
+		return m.Subject
+	}
+	return ""
+}
+
+type GetInferenceRequest struct {
+	Subject              string   `protobuf:"bytes,1,opt,name=subject,proto3" json:"subject,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetInferenceRequest) Reset()         { *m = GetInferenceRequest{} }
+func (m *GetInferenceRequest) String() string { return proto.CompactTextString(m) }
+func (*GetInferenceRequest) ProtoMessage()    {}
+func (*GetInferenceRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_service_5c77c446d0a2ff47, []int{9}
+}
+func (m *GetInferenceRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetInferenceRequest.Unmarshal(m, b)
+}
+func (m *GetInferenceRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetInferenceRequest.Marshal(b, m, deterministic)
+}
+func (dst *GetInferenceRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetInferenceRequest.Merge(dst, src)
+}
+func (m *GetInferenceRequest) XXX_Size() int {
+	return xxx_messageInfo_GetInferenceRequest.Size(m)
+}
+func (m *GetInferenceRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetInferenceRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetInferenceRequest proto.InternalMessageInfo
+
+func (m *GetInferenceRequest) GetSubject() string {
+	if m != nil {
+		return m.Subject
+	}
+	return ""
+}
+
+type GetPeerReply struct {
+	Peers                []*Peer  `protobuf:"bytes,3,rep,name=peers,proto3" json:"peers,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetPeerReply) Reset()         { *m = GetPeerReply{} }
+func (m *GetPeerReply) String() string { return proto.CompactTextString(m) }
+func (*GetPeerReply) ProtoMessage()    {}
+func (*GetPeerReply) Descriptor() ([]byte, []int) {
+	return fileDescriptor_service_5c77c446d0a2ff47, []int{10}
+}
+func (m *GetPeerReply) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetPeerReply.Unmarshal(m, b)
+}
+func (m *GetPeerReply) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetPeerReply.Marshal(b, m, deterministic)
+}
+func (dst *GetPeerReply) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetPeerReply.Merge(dst, src)
+}
+func (m *GetPeerReply) XXX_Size() int {
+	return xxx_messageInfo_GetPeerReply.Size(m)
+}
+func (m *GetPeerReply) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetPeerReply.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetPeerReply proto.InternalMessageInfo
+
+func (m *GetPeerReply) GetPeers() []*Peer {
+	if m != nil {
+		return m.Peers
+	}
+	return nil
+}
+
 func init() {
+	proto.RegisterType((*Empty)(nil), "idl.Empty")
+	proto.RegisterType((*Peer)(nil), "idl.Peer")
 	proto.RegisterType((*RegisterRequest)(nil), "idl.RegisterRequest")
 	proto.RegisterType((*RegisterReply)(nil), "idl.RegisterReply")
+	proto.RegisterType((*SubmitReportRequest)(nil), "idl.SubmitReportRequest")
+	proto.RegisterType((*SubmitReportReply)(nil), "idl.SubmitReportReply")
+	proto.RegisterType((*GetPanoramaRequest)(nil), "idl.GetPanoramaRequest")
+	proto.RegisterType((*GetViewRequest)(nil), "idl.GetViewRequest")
+	proto.RegisterType((*GetReportRequest)(nil), "idl.GetReportRequest")
+	proto.RegisterType((*GetInferenceRequest)(nil), "idl.GetInferenceRequest")
+	proto.RegisterType((*GetPeerReply)(nil), "idl.GetPeerReply")
+	proto.RegisterEnum("idl.SubmitReportReply_Status", SubmitReportReply_Status_name, SubmitReportReply_Status_value)
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -121,90 +515,356 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// PanoramaServiceClient is the client API for PanoramaService service.
+// HealthServiceClient is the client API for HealthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type PanoramaServiceClient interface {
+type HealthServiceClient interface {
 	// Register a local observer to the health service.
 	// Must be called before SubmitReport.
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterReply, error)
+	// Submit a report to the view storage
+	SubmitReport(ctx context.Context, in *SubmitReportRequest, opts ...grpc.CallOption) (*SubmitReportReply, error)
+	// Query the latest raw health report of an entity
+	GetLatestReport(ctx context.Context, in *GetReportRequest, opts ...grpc.CallOption) (*Report, error)
+	// Query all raw health reports from different observers about an entity
+	GetPanorama(ctx context.Context, in *GetPanoramaRequest, opts ...grpc.CallOption) (*Panorama, error)
+	// Query all raw health report from a single observer about an entity
+	GetView(ctx context.Context, in *GetViewRequest, opts ...grpc.CallOption) (*View, error)
+	// Query a summarized health report from different observers about an entity
+	GetInference(ctx context.Context, in *GetInferenceRequest, opts ...grpc.CallOption) (*Inference, error)
+	// Get all the peers (other servers) of this DH server
+	GetPeers(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetPeerReply, error)
+	// Get the ID of this health server
+	GetServerId(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Peer, error)
 }
 
-type panoramaServiceClient struct {
+type healthServiceClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewPanoramaServiceClient(cc *grpc.ClientConn) PanoramaServiceClient {
-	return &panoramaServiceClient{cc}
+func NewHealthServiceClient(cc *grpc.ClientConn) HealthServiceClient {
+	return &healthServiceClient{cc}
 }
 
-func (c *panoramaServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterReply, error) {
+func (c *healthServiceClient) Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterReply, error) {
 	out := new(RegisterReply)
-	err := c.cc.Invoke(ctx, "/idl.PanoramaService/Register", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/idl.HealthService/Register", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// PanoramaServiceServer is the server API for PanoramaService service.
-type PanoramaServiceServer interface {
+func (c *healthServiceClient) SubmitReport(ctx context.Context, in *SubmitReportRequest, opts ...grpc.CallOption) (*SubmitReportReply, error) {
+	out := new(SubmitReportReply)
+	err := c.cc.Invoke(ctx, "/idl.HealthService/SubmitReport", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *healthServiceClient) GetLatestReport(ctx context.Context, in *GetReportRequest, opts ...grpc.CallOption) (*Report, error) {
+	out := new(Report)
+	err := c.cc.Invoke(ctx, "/idl.HealthService/GetLatestReport", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *healthServiceClient) GetPanorama(ctx context.Context, in *GetPanoramaRequest, opts ...grpc.CallOption) (*Panorama, error) {
+	out := new(Panorama)
+	err := c.cc.Invoke(ctx, "/idl.HealthService/GetPanorama", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *healthServiceClient) GetView(ctx context.Context, in *GetViewRequest, opts ...grpc.CallOption) (*View, error) {
+	out := new(View)
+	err := c.cc.Invoke(ctx, "/idl.HealthService/GetView", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *healthServiceClient) GetInference(ctx context.Context, in *GetInferenceRequest, opts ...grpc.CallOption) (*Inference, error) {
+	out := new(Inference)
+	err := c.cc.Invoke(ctx, "/idl.HealthService/GetInference", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *healthServiceClient) GetPeers(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*GetPeerReply, error) {
+	out := new(GetPeerReply)
+	err := c.cc.Invoke(ctx, "/idl.HealthService/GetPeers", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *healthServiceClient) GetServerId(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Peer, error) {
+	out := new(Peer)
+	err := c.cc.Invoke(ctx, "/idl.HealthService/GetServerId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// HealthServiceServer is the server API for HealthService service.
+type HealthServiceServer interface {
 	// Register a local observer to the health service.
 	// Must be called before SubmitReport.
 	Register(context.Context, *RegisterRequest) (*RegisterReply, error)
+	// Submit a report to the view storage
+	SubmitReport(context.Context, *SubmitReportRequest) (*SubmitReportReply, error)
+	// Query the latest raw health report of an entity
+	GetLatestReport(context.Context, *GetReportRequest) (*Report, error)
+	// Query all raw health reports from different observers about an entity
+	GetPanorama(context.Context, *GetPanoramaRequest) (*Panorama, error)
+	// Query all raw health report from a single observer about an entity
+	GetView(context.Context, *GetViewRequest) (*View, error)
+	// Query a summarized health report from different observers about an entity
+	GetInference(context.Context, *GetInferenceRequest) (*Inference, error)
+	// Get all the peers (other servers) of this DH server
+	GetPeers(context.Context, *Empty) (*GetPeerReply, error)
+	// Get the ID of this health server
+	GetServerId(context.Context, *Empty) (*Peer, error)
 }
 
-func RegisterPanoramaServiceServer(s *grpc.Server, srv PanoramaServiceServer) {
-	s.RegisterService(&_PanoramaService_serviceDesc, srv)
+func RegisterHealthServiceServer(s *grpc.Server, srv HealthServiceServer) {
+	s.RegisterService(&_HealthService_serviceDesc, srv)
 }
 
-func _PanoramaService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _HealthService_Register_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(RegisterRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(PanoramaServiceServer).Register(ctx, in)
+		return srv.(HealthServiceServer).Register(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/idl.PanoramaService/Register",
+		FullMethod: "/idl.HealthService/Register",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PanoramaServiceServer).Register(ctx, req.(*RegisterRequest))
+		return srv.(HealthServiceServer).Register(ctx, req.(*RegisterRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _PanoramaService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "idl.PanoramaService",
-	HandlerType: (*PanoramaServiceServer)(nil),
+func _HealthService_SubmitReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubmitReportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HealthServiceServer).SubmitReport(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/idl.HealthService/SubmitReport",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HealthServiceServer).SubmitReport(ctx, req.(*SubmitReportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HealthService_GetLatestReport_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetReportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HealthServiceServer).GetLatestReport(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/idl.HealthService/GetLatestReport",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HealthServiceServer).GetLatestReport(ctx, req.(*GetReportRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HealthService_GetPanorama_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPanoramaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HealthServiceServer).GetPanorama(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/idl.HealthService/GetPanorama",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HealthServiceServer).GetPanorama(ctx, req.(*GetPanoramaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HealthService_GetView_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetViewRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HealthServiceServer).GetView(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/idl.HealthService/GetView",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HealthServiceServer).GetView(ctx, req.(*GetViewRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HealthService_GetInference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetInferenceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HealthServiceServer).GetInference(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/idl.HealthService/GetInference",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HealthServiceServer).GetInference(ctx, req.(*GetInferenceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HealthService_GetPeers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HealthServiceServer).GetPeers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/idl.HealthService/GetPeers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HealthServiceServer).GetPeers(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _HealthService_GetServerId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HealthServiceServer).GetServerId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/idl.HealthService/GetServerId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HealthServiceServer).GetServerId(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _HealthService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "idl.HealthService",
+	HandlerType: (*HealthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Register",
-			Handler:    _PanoramaService_Register_Handler,
+			Handler:    _HealthService_Register_Handler,
+		},
+		{
+			MethodName: "SubmitReport",
+			Handler:    _HealthService_SubmitReport_Handler,
+		},
+		{
+			MethodName: "GetLatestReport",
+			Handler:    _HealthService_GetLatestReport_Handler,
+		},
+		{
+			MethodName: "GetPanorama",
+			Handler:    _HealthService_GetPanorama_Handler,
+		},
+		{
+			MethodName: "GetView",
+			Handler:    _HealthService_GetView_Handler,
+		},
+		{
+			MethodName: "GetInference",
+			Handler:    _HealthService_GetInference_Handler,
+		},
+		{
+			MethodName: "GetPeers",
+			Handler:    _HealthService_GetPeers_Handler,
+		},
+		{
+			MethodName: "GetServerId",
+			Handler:    _HealthService_GetServerId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "service.proto",
 }
 
-func init() { proto.RegisterFile("service.proto", fileDescriptor_service_ca72272c16e1aadf) }
+func init() { proto.RegisterFile("service.proto", fileDescriptor_service_5c77c446d0a2ff47) }
 
-var fileDescriptor_service_ca72272c16e1aadf = []byte{
-	// 217 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x5c, 0x8f, 0x4f, 0x4b, 0xc4, 0x30,
-	0x10, 0xc5, 0x5d, 0x95, 0x65, 0x1d, 0x5c, 0x16, 0x82, 0x48, 0xc9, 0x45, 0xe9, 0x45, 0x4f, 0x59,
-	0x50, 0xf0, 0x03, 0x08, 0x1e, 0xbc, 0x49, 0xfc, 0x04, 0xa9, 0x19, 0x9b, 0x48, 0xb2, 0x13, 0xf3,
-	0x47, 0xe8, 0xb7, 0x97, 0x36, 0xd5, 0x85, 0x1e, 0x7f, 0x6f, 0x66, 0xde, 0xbc, 0x07, 0xdb, 0x84,
-	0xf1, 0xc7, 0x7e, 0xa0, 0x08, 0x91, 0x32, 0xb1, 0x33, 0xab, 0x1d, 0xbf, 0xe9, 0x89, 0x7a, 0x87,
-	0xfb, 0x49, 0xea, 0xca, 0xe7, 0x3e, 0x5b, 0x8f, 0x29, 0x2b, 0x1f, 0xea, 0x16, 0xbf, 0x34, 0xa8,
-	0x5c, 0x36, 0x95, 0xda, 0x17, 0xd8, 0x49, 0xec, 0x6d, 0xca, 0x18, 0x25, 0x7e, 0x17, 0x4c, 0x99,
-	0x5d, 0xc3, 0xda, 0x93, 0x2e, 0x0e, 0x9b, 0xd5, 0xed, 0xea, 0xfe, 0x42, 0xce, 0xc4, 0x38, 0x6c,
-	0xa8, 0x1b, 0x3f, 0x62, 0x6c, 0x4e, 0xa7, 0xc9, 0x3f, 0xb7, 0x77, 0xb0, 0x3d, 0xda, 0x04, 0x37,
-	0x8c, 0x26, 0x46, 0x1d, 0xf4, 0x6c, 0x72, 0x2e, 0x67, 0x7a, 0x78, 0x85, 0xdd, 0x9b, 0x3a, 0x50,
-	0x54, 0x5e, 0xbd, 0xd7, 0xf0, 0xec, 0x09, 0x36, 0x7f, 0xb7, 0xec, 0x4a, 0x58, 0xed, 0xc4, 0x22,
-	0x11, 0x67, 0x0b, 0x35, 0xb8, 0xa1, 0x3d, 0x79, 0xe6, 0xd0, 0xa0, 0x2e, 0xe2, 0xcb, 0x14, 0x41,
-	0x51, 0x63, 0x14, 0x1a, 0x31, 0xd4, 0x72, 0xdd, 0x7a, 0x6a, 0xf7, 0xf8, 0x1b, 0x00, 0x00, 0xff,
-	0xff, 0x6a, 0xee, 0x63, 0x97, 0x22, 0x01, 0x00, 0x00,
+var fileDescriptor_service_5c77c446d0a2ff47 = []byte{
+	// 560 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x54, 0x5b, 0x6f, 0xd3, 0x4c,
+	0x10, 0x75, 0x93, 0x36, 0x49, 0x27, 0x97, 0xa6, 0xd3, 0xef, 0x2b, 0x96, 0x25, 0xd4, 0x6a, 0x91,
+	0xa0, 0x02, 0xe4, 0x48, 0x41, 0x80, 0xc4, 0x5b, 0x2f, 0xae, 0x89, 0x54, 0x41, 0xe4, 0x20, 0xde,
+	0x9d, 0xec, 0x34, 0x71, 0x65, 0xc7, 0x66, 0xbd, 0x06, 0x45, 0xfc, 0x34, 0xfe, 0x1c, 0xf2, 0x7a,
+	0x9d, 0x1b, 0xe1, 0xf2, 0x96, 0x39, 0x7b, 0xce, 0xec, 0xce, 0x39, 0x13, 0x43, 0x3b, 0x25, 0xf1,
+	0x35, 0x98, 0x90, 0x9d, 0x88, 0x58, 0xc6, 0x58, 0x0d, 0x78, 0x68, 0x9d, 0x4d, 0xe3, 0x78, 0x1a,
+	0x52, 0x4f, 0x41, 0xe3, 0xec, 0xbe, 0x27, 0x83, 0x88, 0x52, 0xe9, 0x47, 0x49, 0xc1, 0xb2, 0x5a,
+	0x33, 0xf2, 0x43, 0x39, 0x2b, 0x2a, 0x56, 0x87, 0x03, 0x27, 0x4a, 0xe4, 0x82, 0x3d, 0x87, 0xfd,
+	0x21, 0x91, 0xc0, 0x0e, 0x54, 0x02, 0x6e, 0xee, 0x9d, 0xef, 0x5d, 0x1c, 0x7a, 0x95, 0x80, 0x23,
+	0xc2, 0xbe, 0xcf, 0xb9, 0x30, 0x2b, 0x0a, 0x51, 0xbf, 0x99, 0x03, 0x47, 0x1e, 0x4d, 0x83, 0x54,
+	0x92, 0xf0, 0xe8, 0x4b, 0x46, 0xa9, 0xc4, 0x53, 0xa8, 0x45, 0x31, 0xcf, 0x42, 0xd2, 0x52, 0x5d,
+	0xa1, 0x05, 0x8d, 0x78, 0x9c, 0x3f, 0x93, 0xca, 0x16, 0xcb, 0x9a, 0x3d, 0x83, 0xf6, 0xaa, 0x4d,
+	0x12, 0x2e, 0xf2, 0x26, 0x33, 0x7f, 0xce, 0x75, 0x93, 0x7d, 0x4f, 0x57, 0xcc, 0x83, 0x93, 0x51,
+	0x36, 0x8e, 0x02, 0xe9, 0x51, 0x12, 0x0b, 0xb9, 0x76, 0xe7, 0x2e, 0x3a, 0x3e, 0x81, 0x9a, 0x50,
+	0x44, 0x75, 0x63, 0xb3, 0xdf, 0xb4, 0x03, 0x1e, 0xda, 0x5a, 0xab, 0x8f, 0xd8, 0x77, 0x38, 0xde,
+	0xec, 0x99, 0x3f, 0xe0, 0x75, 0xae, 0x4c, 0xb3, 0x50, 0xaa, 0x8e, 0x9d, 0xfe, 0x63, 0xa5, 0xfc,
+	0x85, 0x67, 0x8f, 0xa4, 0x2f, 0xb3, 0xd4, 0xd3, 0x64, 0xd6, 0x83, 0x5a, 0x81, 0x60, 0x13, 0xea,
+	0x03, 0xf7, 0xc3, 0x47, 0xcf, 0xb9, 0xe9, 0x1a, 0xd8, 0x82, 0xc6, 0xe5, 0xf5, 0xb5, 0x33, 0xfc,
+	0xe4, 0xdc, 0x74, 0xf7, 0x10, 0xa0, 0x76, 0x7b, 0x39, 0xb8, 0x73, 0x6e, 0xba, 0x15, 0x66, 0x03,
+	0xba, 0x24, 0x87, 0xfe, 0x3c, 0x16, 0x7e, 0xe4, 0x97, 0xf3, 0x98, 0x50, 0x4f, 0xb3, 0xf1, 0x03,
+	0x4d, 0xa4, 0x36, 0xb1, 0x2c, 0xd9, 0x2d, 0x74, 0x5c, 0x92, 0x9f, 0x03, 0xfa, 0xf6, 0x57, 0xee,
+	0x1f, 0x1d, 0x7f, 0x09, 0x5d, 0x97, 0xb6, 0x5c, 0xfc, 0xfd, 0xad, 0x3d, 0x38, 0x71, 0x49, 0x0e,
+	0xe6, 0xf7, 0x24, 0x68, 0x3e, 0xa1, 0x7f, 0x11, 0xb4, 0xf2, 0xb1, 0xa8, 0xcc, 0xf3, 0x0c, 0x0e,
+	0x12, 0x22, 0x91, 0x9a, 0xd5, 0xf3, 0xea, 0x45, 0xb3, 0x7f, 0xa8, 0xdc, 0x54, 0xc7, 0x05, 0xde,
+	0xff, 0x51, 0x85, 0xf6, 0x7b, 0xb5, 0x8e, 0xa3, 0x62, 0x93, 0xf1, 0x0d, 0x34, 0xca, 0x9d, 0xc0,
+	0xff, 0x74, 0x6e, 0x1b, 0x9b, 0x66, 0xe1, 0x16, 0x9a, 0x84, 0x0b, 0x66, 0xe0, 0x15, 0xb4, 0xd6,
+	0x63, 0x42, 0x73, 0x47, 0x72, 0x85, 0xfe, 0x74, 0x77, 0xa6, 0xcc, 0xc0, 0xb7, 0x70, 0xe4, 0x92,
+	0xbc, 0xf3, 0x25, 0xa5, 0x65, 0x9b, 0xff, 0x15, 0x79, 0xdb, 0x33, 0x6b, 0x7d, 0xa3, 0x94, 0xb0,
+	0xb9, 0x16, 0x27, 0x3e, 0x2a, 0x45, 0x5b, 0x01, 0x5b, 0xed, 0xc2, 0x00, 0x8d, 0x32, 0x03, 0x5f,
+	0x40, 0x5d, 0xe7, 0x8a, 0x27, 0xa5, 0x68, 0x2d, 0x65, 0xab, 0x70, 0x2c, 0x47, 0x98, 0x81, 0xef,
+	0x94, 0xbb, 0xcb, 0x38, 0xf4, 0x88, 0x3b, 0x12, 0xb2, 0x3a, 0xea, 0x64, 0x09, 0xab, 0x8b, 0x1a,
+	0x3a, 0x99, 0x14, 0x41, 0x9d, 0xaa, 0x7f, 0xbd, 0x75, 0xbc, 0x7c, 0x2a, 0xad, 0xbc, 0x7c, 0xaa,
+	0xc6, 0x19, 0xa9, 0x95, 0x19, 0xf0, 0x0d, 0xfe, 0x2a, 0x42, 0x66, 0x5c, 0x59, 0x60, 0x12, 0xcf,
+	0xec, 0x87, 0x59, 0x66, 0xc7, 0x82, 0x93, 0xb0, 0x39, 0x51, 0x52, 0x7c, 0x5d, 0xc6, 0x35, 0xf5,
+	0x79, 0x79, 0xf5, 0x33, 0x00, 0x00, 0xff, 0xff, 0x97, 0xc7, 0xe6, 0xf4, 0xa3, 0x04, 0x00, 0x00,
 }
