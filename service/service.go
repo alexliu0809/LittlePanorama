@@ -6,6 +6,7 @@ import (
 	"net"
 	"golang.org/x/net/context"
 	"LittlePanorama/store"
+	"LittlePanorama/decision"
 	"github.com/golang/protobuf/ptypes"
 
 	rf "google.golang.org/grpc/reflection"
@@ -94,8 +95,7 @@ func (self *PanoramaServer) SubmitReport(ctx context.Context, in *pb.SubmitRepor
 		return &pb.SubmitReportReply{Result: result}, errors.New("Invalid Handle")
 	}
 	var result = pb.SubmitReportReply_ACCEPTED
-	fmt.Println(in.Report.Subject)
-	fmt.Println(in.Report.Observer)
+	fmt.Println(in.Report.Observation)
 	self.storage.SubmitReport(in.Report)
 	return &pb.SubmitReportReply{Result: result}, nil
 }
@@ -128,7 +128,13 @@ func (self *PanoramaServer) GetView(ctx context.Context, in *pb.GetViewRequest) 
 
 // Query a summarized health report from different observers about an entity
 func (self *PanoramaServer) GetInference(ctx context.Context, in *pb.GetInferenceRequest) (*pb.Inference, error){
-	return nil, nil
+	p := self.storage.GetPanorama(in.Subject)
+	if p == nil{
+		return nil, errors.New("No Inference Available For "+in.Subject)
+	}
+	inference := decision.Inference(p)
+	fmt.Println(inference.Observation.Metrics)
+	return inference, nil
 }
 
 // Get all the peers of this DH server
