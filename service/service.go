@@ -5,14 +5,17 @@ import (
 	"google.golang.org/grpc"
 	"net"
 	"golang.org/x/net/context"
+	"LittlePanorama/store"
+	"github.com/golang/protobuf/ptypes"
+
 	rf "google.golang.org/grpc/reflection"
 	pb "LittlePanorama/build/gen"
-	"LittlePanorama/store"
+	
 )
 
 type PanoramaServer struct{
-	addr string // the addr this server listens to 
-	peers []string // the addr of its peers	
+	me *pb.Peer // the addr and this server listens to and its id
+	peers []*pb.Peer // the addr of its peers	
 	
 	// a unit responsible for commnuication
 	port_listener net.Listener
@@ -27,8 +30,8 @@ type PanoramaServer struct{
 
 
 // Initialize an instance of the panorama server
-func NewPanoramaServer(addr string, peers []string) *PanoramaServer{
-	return &PanoramaServer{addr:addr, peers:peers, status:0, storage:store.NewStorage()}
+func NewPanoramaServer(me *pb.Peer, peers []*pb.Peer) *PanoramaServer{
+	return &PanoramaServer{me:me, peers:peers, status:0, storage:store.NewStorage()}
 }
 
 
@@ -43,7 +46,7 @@ func (self *PanoramaServer) Start() error{
 	// https://grpc.io/docs/tutorials/basic/go/
 	// listen to a port
 	var e error
-	self.port_listener, e = net.Listen("tcp", self.addr)
+	self.port_listener, e = net.Listen("tcp", self.me.Addr)
 	if e != nil{
 		return e
 	}
@@ -56,7 +59,7 @@ func (self *PanoramaServer) Start() error{
 	// mark as online
 	self.status = 1
 	// get ready for serving, returns an error if necessary
-	fmt.Println("Start Serving at Address:",self.addr)
+	fmt.Println("Start Serving at Address:",self.me.Addr)
 	return self.grpc_server.Serve(self.port_listener)
 }
 
@@ -127,13 +130,26 @@ func (self *PanoramaServer) GetView(ctx context.Context, in *pb.GetViewRequest) 
 func (self *PanoramaServer) GetInference(ctx context.Context, in *pb.GetInferenceRequest) (*pb.Inference, error){
 	return nil, nil
 }
+
 // Get all the peers of this DH server
 func (self *PanoramaServer) GetPeers(ctx context.Context, in *pb.Empty) (*pb.GetPeerReply, error){
-	return nil, nil
+	r := make([]*pb.Peer, len(self.peers)-1)
+	for _, p := range self.peers{
+		if p.Addr != self.me.Addr && p.Id != self.me.Id{
+			r = append(r,p)
+		}
+	}
+	return &pb.GetPeerReply{Peers:r},nil
 }
 // Get the ID of this health server
-func (self *PanoramaServer) GetServerId(ctx context.Context, in *pb.Empty) (*pb.Peer, error){
-	return nil, nil
+func (self *PanoramaServer) GetId(ctx context.Context, in *pb.Empty) (*pb.Peer, error){
+	return self.me, nil
 }
 
+// Receive a ping from client
+func (self *PanoramaServer) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingReply, error){
+	fmt.Println("Receiving a ping from ",in.Source.Addr)
+	t := ptypes.TimestampNow()
+	return &pb.PingReply{Time: t, Result: pb.PingReply_GOOD}, nil
+}
 

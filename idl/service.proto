@@ -48,14 +48,14 @@ service HealthService{
   // Dump all the inferred health reports about all observed entities
   // rpc DumpInference(Empty) returns (DumpInferenceReply) {}
 
-  // Ping request to test liveness of a health server
-  // rpc Ping(PingRequest) returns (PingReply) {}
+  // Receive a ping from a client
+  rpc Ping(PingRequest) returns (PingReply) {}
 
   // Get all the peers (other servers) of this DH server
   rpc GetPeers(Empty) returns (GetPeerReply) {}
 
   // Get the ID of this health server
-  rpc GetServerId(Empty) returns (Peer) {}
+  rpc GetId(Empty) returns (Peer) {}
 
 }
 
@@ -109,4 +109,18 @@ message GetInferenceRequest {
 
 message GetPeerReply {
   repeated Peer peers = 3; // all the peers 
+}
+
+message PingRequest {
+  Peer source = 1;
+  google.protobuf.Timestamp time = 2; 
+}
+
+message PingReply {
+  enum Status {
+    GOOD = 0;
+    BAD = 1;
+  }
+  Status result = 1;
+  google.protobuf.Timestamp time = 2; 
 }
