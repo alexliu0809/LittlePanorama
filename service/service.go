@@ -99,6 +99,12 @@ func (self *PanoramaServer) SubmitReport(ctx context.Context, in *pb.SubmitRepor
 	var result = pb.SubmitReportReply_ACCEPTED
 	fmt.Println(in.Report.Observation)
 	self.storage.SubmitReport(in.Report)
+	
+	// I am gonna observe this subject once I have one report
+	go self.Observe(ctx, &pb.ObserveRequest{Subject:in.Report.Subject})
+	// Propagate this report to others who are observing it.
+	go self.exchanger.PropageNewReport(ctx, in.Report)
+
 	return &pb.SubmitReportReply{Result: result}, nil
 }
 
@@ -199,18 +205,40 @@ func (self *PanoramaServer) DumpInference(ctx context.Context, in *pb.Empty) (*p
 // Client requires you to observe a subject
 // Now you should send this info to other peers
 func (self *PanoramaServer) Observe(ctx context.Context, in *pb.ObserveRequest) (*pb.ObserveReply, error){
-	self.exchanger.Subscribe(ctx, in.Subject)
-	return nil,nil
+	reply, err := self.exchanger.Observe(ctx, in.Subject)
+	return reply, err
 }
 
 // Stop observing a particular subject, all the reports
 // concerning this subject will be ignored
 func (self *PanoramaServer) StopObserving(ctx context.Context, in *pb.ObserveRequest) (*pb.ObserveReply, error){
-	self.exchanger.Unsubscribe(ctx, in.Subject)
-	return nil,nil
+	reply, err := self.exchanger.StopObserving(ctx, in.Subject)
+	return reply, err
 }
 
 // Receive a report from a peer after you subscribe
 func (self *PanoramaServer) LearnReport(ctx context.Context, in *pb.LearnReportRequest) (*pb.LearnReportReply, error){
-	return nil,nil
+	// request_type := LearnReportRequest.Kind
+	// source := LearnReportRequest.Peer
+	// report = LearnReportRequest.Report
+	// handles different request types differently
+	switch in.Kind{
+
+    case pb.LearnReportRequest_SUBSCRIPTION:
+        reply, err := self.exchanger.PeerObserve(in.Source, in.Report.Subject)
+		return reply, err
+	case pb.LearnReportRequest_UNSUBSCRIPTION:
+        reply, err := self.exchanger.PeerUnobserve(in.Source, in.Report.Subject)
+		return reply, err
+	case pb.LearnReportRequest_NORMAL:
+		reply, err := self.addReport(in.Report)
+		return reply, err
+    }
+
+	return nil, nil
+}
+
+func (self *PanoramaServer) addReport(report *pb.Report) (*pb.LearnReportReply, error){
+	self.storage.SubmitReport(report)
+	return &pb.LearnReportReply{Result:pb.LearnReportReply_ACCEPTED}, nil
 }
