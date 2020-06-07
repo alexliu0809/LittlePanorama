@@ -7,6 +7,7 @@ import (
 	"golang.org/x/net/context"
 	"LittlePanorama/store"
 	"LittlePanorama/decision"
+	"LittlePanorama/exchange"
 	"github.com/golang/protobuf/ptypes"
 
 	rf "google.golang.org/grpc/reflection"
@@ -27,14 +28,15 @@ type PanoramaServer struct{
 
 	// in memory storage unit
 	storage store.Storage
-}
 
+	// exchanger
+	exchanger exchange.Exchanger
+}
 
 // Initialize an instance of the panorama server
 func NewPanoramaServer(me *pb.Peer, peers []*pb.Peer) *PanoramaServer{
-	return &PanoramaServer{me:me, peers:peers, status:0, storage:store.NewStorage()}
+	return &PanoramaServer{me:me, peers:peers, status:0, storage:store.NewStorage(), exchanger:exchange.NewExchanger(me,peers)}
 }
-
 
 // Start
 func (self *PanoramaServer) Start() error{
@@ -139,6 +141,7 @@ func (self *PanoramaServer) GetInference(ctx context.Context, in *pb.GetInferenc
 
 // Get all the peers of this DH server
 func (self *PanoramaServer) GetPeers(ctx context.Context, in *pb.Empty) (*pb.GetPeerReply, error){
+	fmt.Println("Get Peers")
 	r := make([]*pb.Peer, len(self.peers)-1)
 	for _, p := range self.peers{
 		if p.Addr != self.me.Addr && p.Id != self.me.Id{
@@ -147,6 +150,7 @@ func (self *PanoramaServer) GetPeers(ctx context.Context, in *pb.Empty) (*pb.Get
 	}
 	return &pb.GetPeerReply{Peers:r},nil
 }
+
 // Get the ID of this health server
 func (self *PanoramaServer) GetId(ctx context.Context, in *pb.Empty) (*pb.Peer, error){
 	return self.me, nil
@@ -159,3 +163,54 @@ func (self *PanoramaServer) Ping(ctx context.Context, in *pb.PingRequest) (*pb.P
 	return &pb.PingReply{Time: t, Result: pb.PingReply_GOOD}, nil
 }
 
+// Query the list of all subjects that have been observed
+func (self *PanoramaServer) GetObservedSubjects(ctx context.Context, in *pb.Empty) (*pb.GetObservedSubjectsReply, error){
+	fmt.Println("Get Observed Subjects")
+	subjects := self.storage.DumpSubjects()
+	if subjects == nil{
+		return nil, errors.New("No Subject Available For Dump")
+	}
+	return &pb.GetObservedSubjectsReply{Subjects:subjects}, nil
+}
+
+// Dump all the raw health reports about all observed entities
+func (self *PanoramaServer) DumpPanorama(ctx context.Context, in *pb.Empty) (*pb.DumpPanoramaReply, error){
+	panoramas := self.storage.DumpPanorama()
+	if panoramas == nil{
+		return nil, errors.New("No Panorama Available For Dump")
+	}
+	return &pb.DumpPanoramaReply{Panoramas:panoramas}, nil
+}
+
+// Dump all the inferred health reports about all observed entities
+func (self *PanoramaServer) DumpInference(ctx context.Context, in *pb.Empty) (*pb.DumpInferenceReply, error){
+	panoramas := self.storage.DumpPanorama()
+	if panoramas == nil{
+		return nil, errors.New("No Inference Available For Dump")
+	}
+	inferences := make(map[string]*pb.Inference)
+	for subject, panorama := range panoramas{
+		inference := decision.Inference(panorama)
+		inferences[subject] = inference
+	}
+	return &pb.DumpInferenceReply{Inferences:inferences}, nil
+}
+
+// Client requires you to observe a subject
+// Now you should send this info to other peers
+func (self *PanoramaServer) Observe(ctx context.Context, in *pb.ObserveRequest) (*pb.ObserveReply, error){
+	self.exchanger.Subscribe(ctx, in.Subject)
+	return nil,nil
+}
+
+// Stop observing a particular subject, all the reports
+// concerning this subject will be ignored
+func (self *PanoramaServer) StopObserving(ctx context.Context, in *pb.ObserveRequest) (*pb.ObserveReply, error){
+	self.exchanger.Unsubscribe(ctx, in.Subject)
+	return nil,nil
+}
+
+// Receive a report from a peer after you subscribe
+func (self *PanoramaServer) LearnReport(ctx context.Context, in *pb.LearnReportRequest) (*pb.LearnReportReply, error){
+	return nil,nil
+}

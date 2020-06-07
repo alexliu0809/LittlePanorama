@@ -1,7 +1,9 @@
 package store
 
 import (
+	ts "github.com/golang/protobuf/ptypes/timestamp"
 	pb "LittlePanorama/build/gen"
+	//"LittlePanorama/decision"
 	"sync"
 	"fmt"
 )
@@ -109,4 +111,29 @@ func (self *Storage) GetPanorama(subject string) *pb.Panorama{
 		}
 		return &pb.Panorama{Subject:subject,Views:views}
 	}
+}
+
+func (self *Storage) DumpPanorama() map[string]*pb.Panorama{
+	paranoramas := make(map[string]*pb.Panorama)
+	for subject, _ := range self.subject_to_reports{
+		paranoramas[subject] = self.GetPanorama(subject)
+	}
+	return paranoramas
+}
+
+// use outer function instead
+// func (self *Storage) DumpInference() map[string]*pb.Inference{
+// 	paranoramas = make(map[string]*pb.Panorama)
+// 	for subject, _ := range self.subject_to_reports{
+// 		paranoramas[subject] = self.Inference(subject)
+// 	}
+// 	return paranoramas
+// }
+
+func (self *Storage) DumpSubjects() map[string]*ts.Timestamp{
+	subjects := make(map[string]*ts.Timestamp)
+	for subject, reports := range self.subject_to_reports{
+		subjects[subject] = reports[len(reports)-1].Observation.Ts
+	}
+	return subjects
 }
