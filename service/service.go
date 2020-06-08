@@ -9,6 +9,7 @@ import (
 	"LittlePanorama/decision"
 	"LittlePanorama/exchange"
 	"github.com/golang/protobuf/ptypes"
+	"LittlePanorama/types"
 
 	rf "google.golang.org/grpc/reflection"
 	pb "LittlePanorama/build/gen"
@@ -34,7 +35,10 @@ type PanoramaServer struct{
 }
 
 // Initialize an instance of the panorama server
-func NewPanoramaServer(me *pb.Peer, peers []*pb.Peer) *PanoramaServer{
+func NewPanoramaServer(conf *types.Conf) *PanoramaServer{
+	me := &pb.Peer{Id:conf.Id,Addr:conf.Addr}
+	peers := conf.Peers
+	fmt.Printf("Configs:\nMe:%s\nPeers:%s\nSubjects:%s\n\n",me,peers,conf.Subjects)
 	return &PanoramaServer{me:me, peers:peers, status:0, storage:store.NewStorage(), exchanger:exchange.NewExchanger(me,peers)}
 }
 
@@ -62,7 +66,7 @@ func (self *PanoramaServer) Start() error{
 	// mark as online
 	self.status = 1
 	// get ready for serving, returns an error if necessary
-	fmt.Println("Start Serving at Address:",self.me.Addr)
+	fmt.Println("Start Serving at Address:",self.me.Addr,"\n")
 	return self.grpc_server.Serve(self.port_listener)
 }
 
@@ -85,7 +89,7 @@ func (self *PanoramaServer) Register(ctx context.Context, in *pb.RegisterRequest
 	// id assigned to this observer. if multiple duplicate registrations, 
 	// we would only assign the same handle
 	observer_handle, err := self.storage.Register(new_observer)
-	fmt.Println("Register",in.Module,in.Observer)
+	fmt.Println("Register",in.Module,in.Observer,"\n")
 	return &pb.RegisterReply{Handle: observer_handle}, err
 }
 
@@ -97,13 +101,17 @@ func (self *PanoramaServer) SubmitReport(ctx context.Context, in *pb.SubmitRepor
 		return &pb.SubmitReportReply{Result: result}, errors.New("Invalid Handle")
 	}
 	var result = pb.SubmitReportReply_ACCEPTED
-	fmt.Println(in.Report.Observation)
+	fmt.Printf("Report Received on %s:\n%s\n\n",in.Report.Subject,in.Report.Observation)
+	var is_observing bool = self.storage.IsObserving(in.Report.Subject)
 	self.storage.SubmitReport(in.Report)
 	
+	
 	// I am gonna observe this subject once I have one report
-	go self.Observe(ctx, &pb.ObserveRequest{Subject:in.Report.Subject})
+	if is_observing == false{
+		go self.Observe(ctx, &pb.ObserveRequest{Subject:in.Report.Subject})
+	}
 	// Propagate this report to others who are observing it.
-	go self.exchanger.PropageNewReport(ctx, in.Report)
+	go self.exchanger.PropageNewReport(in.Report)
 
 	return &pb.SubmitReportReply{Result: result}, nil
 }
@@ -205,14 +213,14 @@ func (self *PanoramaServer) DumpInference(ctx context.Context, in *pb.Empty) (*p
 // Client requires you to observe a subject
 // Now you should send this info to other peers
 func (self *PanoramaServer) Observe(ctx context.Context, in *pb.ObserveRequest) (*pb.ObserveReply, error){
-	reply, err := self.exchanger.Observe(ctx, in.Subject)
+	reply, err := self.exchanger.Observe(in.Subject)
 	return reply, err
 }
 
 // Stop observing a particular subject, all the reports
 // concerning this subject will be ignored
 func (self *PanoramaServer) StopObserving(ctx context.Context, in *pb.ObserveRequest) (*pb.ObserveReply, error){
-	reply, err := self.exchanger.StopObserving(ctx, in.Subject)
+	reply, err := self.exchanger.StopObserving(in.Subject)
 	return reply, err
 }
 
@@ -231,6 +239,7 @@ func (self *PanoramaServer) LearnReport(ctx context.Context, in *pb.LearnReportR
         reply, err := self.exchanger.PeerUnobserve(in.Source, in.Report.Subject)
 		return reply, err
 	case pb.LearnReportRequest_NORMAL:
+		fmt.Printf("New Report Received from %s(%s) on %s\n\n",in.Source.Id,in.Source.Addr,in.Report.Subject)
 		reply, err := self.addReport(in.Report)
 		return reply, err
     }

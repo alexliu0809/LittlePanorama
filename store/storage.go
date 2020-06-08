@@ -5,7 +5,7 @@ import (
 	pb "LittlePanorama/build/gen"
 	//"LittlePanorama/decision"
 	"sync"
-	"fmt"
+	//"fmt"
 )
 
 type Observer struct{
@@ -59,7 +59,7 @@ func (self *Storage) SubmitReport(r *pb.Report){
 	defer self.lock.Unlock()
 	self.observer_to_reports[r.Observer] = append(self.observer_to_reports[r.Observer], r)
 	self.subject_to_reports[r.Subject] = append(self.subject_to_reports[r.Subject], r)
-	fmt.Println(self.subject_to_reports)
+	//fmt.Println(self.subject_to_reports)
 }
 
 // get the latest report on a subject
@@ -136,4 +136,13 @@ func (self *Storage) DumpSubjects() map[string]*ts.Timestamp{
 		subjects[subject] = reports[len(reports)-1].Observation.Ts
 	}
 	return subjects
+}
+
+func (self *Storage) IsObserving(subject string) bool{
+	for s,_ := range self.subject_to_reports{
+		if s == subject{
+			return true
+		}
+	}
+	return false
 }
