@@ -4,19 +4,19 @@ import (
 	pb "LittlePanorama/build/gen"
 )
 
-type Conf struct{
+type HealthServerConfig struct{
 	Addr string
 	Id string
 	Subjects []string
 	Peers []*pb.Peer
 }
 
-func EmptyConf() *Conf{
-	return &Conf{}
+func EmptyConf() *HealthServerConfig{
+	return &HealthServerConfig{}
 }
 
-func SingleServerConf(addr,id string) *Conf{
+func SingleServerConf(addr,id string) *HealthServerConfig{
 	peers := make([]*pb.Peer,1)
 	peers[0] = &pb.Peer{Addr:addr, Id: id}
-	return &Conf{Addr:addr, Id:id, Peers:peers}
+	return &HealthServerConfig{Addr:addr, Id:id, Peers:peers}
 }

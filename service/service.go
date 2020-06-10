@@ -35,7 +35,7 @@ type PanoramaServer struct{
 }
 
 // Initialize an instance of the panorama server
-func NewPanoramaServer(conf *types.Conf) *PanoramaServer{
+func NewHealthGServer(conf *types.HealthServerConfig) *PanoramaServer{
 	me := &pb.Peer{Id:conf.Id,Addr:conf.Addr}
 	peers := conf.Peers
 	fmt.Printf("Configs:\nMe:%s\nPeers:%s\nSubjects:%s\n\n",me,peers,conf.Subjects)
@@ -43,7 +43,7 @@ func NewPanoramaServer(conf *types.Conf) *PanoramaServer{
 }
 
 // Start
-func (self *PanoramaServer) Start() error{
+func (self *PanoramaServer) Start(ch chan error) error{
 	//fmt.Println("Starting Server")
 	if self.status == 1{
 		return errors.New("Server Already Running")
@@ -66,7 +66,7 @@ func (self *PanoramaServer) Start() error{
 	// mark as online
 	self.status = 1
 	// get ready for serving, returns an error if necessary
-	fmt.Println("Start Serving at Address:",self.me.Addr,"\n")
+	fmt.Printf("Start Serving at Address:%s\n\n",self.me.Addr)
 	return self.grpc_server.Serve(self.port_listener)
 }
 
@@ -89,7 +89,7 @@ func (self *PanoramaServer) Register(ctx context.Context, in *pb.RegisterRequest
 	// id assigned to this observer. if multiple duplicate registrations, 
 	// we would only assign the same handle
 	observer_handle, err := self.storage.Register(new_observer)
-	fmt.Println("Register",in.Module,in.Observer,"\n")
+	fmt.Printf("Register %s %s\n\n",in.Module,in.Observer)
 	return &pb.RegisterReply{Handle: observer_handle}, err
 }
 

@@ -6,6 +6,8 @@ import (
 	ts "github.com/golang/protobuf/ptypes/timestamp"
 )
 
+// author's optimization: VIEW_METRIC_HISTORY_SIZE
+
 // infer the status of a subject given its panorama
 func Inference(in *pb.Panorama) *pb.Inference{
 	if in == nil{ // no panorama is available

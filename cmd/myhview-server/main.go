@@ -15,7 +15,7 @@ func main(){
 	var config     = flag.String("config", "", "read config file that contains peer addr")
 	var addr       = flag.String("addr", "localhost", "this server listens to")
 
-	var conf *types.Conf
+	var conf *types.HealthServerConfig
 	// parse the flag
 	flag.Parse()
 	// parse rc
@@ -49,6 +49,6 @@ func main(){
 		conf = types.SingleServerConf(me_addr, me_id)
 	}
 
-	sever := service.NewPanoramaServer(conf)
-	sever.Start()
+	server := service.NewHealthGServer(conf)
+	server.Start(make(chan error))
 }

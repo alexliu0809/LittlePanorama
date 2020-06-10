@@ -10,7 +10,7 @@ import (
 	pb "LittlePanorama/build/gen"
 )
 
-func ParseRC(rc string) (*types.Conf, error) {
+func ParseRC(rc string) (*types.HealthServerConfig, error) {
 	if len(rc) > 0{
 
 		f, err := os.Open(rc)
