@@ -1,5 +1,6 @@
 \section{goals and timeline}
-My main interest is in reproducing the panorama system implemented by the original paper, in which the authors reported an implementation of 6,000 lines of GO code. I envision this part alone nontrivial amount of work. As a first step, \textbf{I would aim at delivering the key insight of this work and making it functionable to collect and analysis error in a distributed system, with a projected amount of 2k to 3k lines of GO code}. If I could finish this part fast enough, I would consider evaluating the work in a richer context or even extending the work. Here I divide my goals into two categories: \textit{Must-have} and \textit{Might-have}. I would make sure to deliver the items in \textit{Must-have} and might deliver those in \textit{Might-have} depending on the time available. Below I detail my goals.
+My main interest is in reproducing the panorama system implemented by the original paper, in which the authors reported an implementation of 6,000 lines of GO code. I envision this part alone nontrivial amount of work. As a first step, \textbf{I would aim at delivering the key insight of this work and making it functionable to collect and analyze errors in a distributed system, with a projected amount of 1k to 2k lines of GO code}. \textbf{I would also reuse the author's implementation of the basic types and focus on reimplementing the core functions only}. I would detail what is imported from the original project and what is written by myself in the final report. 
+Here I divide my goals into two categories: \textit{Must-have} and \textit{Might-have}. I would make sure to deliver the items in \textit{Must-have} and might deliver those in \textit{Might-have} depending on the time available. Below I detail my goals.
 \subsection{Panorama System}
 The panorama project consists of two parts: the panorama system and a code injection tool that automatically inserts code based on offline static analysis. The former is implemented in GO and the latter is implemented on top of Soot and AspectJ. As I previously noted, reproducing panorama system itself is nontrivial, and my interest is in distributed systems not static analysis. Thus, I do not consider recreating the code injection tool high priority. If I end up with some free time, I might consider extending panorama with more functionalities. Below, I summarize my goals as in Table ~\ref{table:1} (assuming we have 4 weeks of time).
 % \paragraph{Must-have} 
@@ -17,16 +18,15 @@ The panorama project consists of two parts: the panorama system and a code injec
   \hline
   Goals & Type & Estimated LOC & Timeline \\
   \hline
-  Key part of Panorama & \textit{\textbf{Must-have}} & 2k - 3k & Week2/3\\ 
+  Key part of Panorama & \textit{\textbf{Must-have}} & 1k - 2k & Week2/3\\ 
   The rest of Panorama & \textit{Might-have} & 2k - 3k & Week4\\ 
-  Code injection tool & \textit{Might-have} & unknown & Week4 \\ 
   \hline
   \end{tabular}
   \caption{Goals with regard to implementing the Panorama System assuming we have 4 weeks of time.}
   \label{table:1}
 \end{table}
 \subsection{Test Environment and Cases}
-The authors setup the experiments in a real-world setting: a cluster of 20 physical machine, each with a 2.4 GHz CPU, 64 GB of RAM, and a 480 GB SATA SSD. They then evaluated Panorama with four widely-used distributed systems: ZooKeeper, Hadoop, HBase, and Cassandra. Clearly, these are settings I would not able to achieve. To make my project tractable, \textbf{I would not reproduce any bugs in a real-world workflow, instead I would introduce them in an artificial and simple way}, as detailed in section ~\ref{subsec:rbug}. Below I detail my goals and timeline for setting up test environment and cases. 
+The authors setup the experiments in a real-world setting: a cluster of 20 physical machine, each with a 2.4 GHz CPU, 64 GB of RAM, and a 480 GB SATA SSD. They then evaluated Panorama with four widely-used distributed systems: ZooKeeper, Hadoop, HBase, and Cassandra. Clearly, these are settings I would not able to achieve. To make my project tractable, \textbf{I would not reproduce any bugs in a real-world workflow, instead I would introduce them in an artificial and simple way}, as detailed in section ~\ref{ssec:rob}. Below I detail my goals and timeline for setting up test environment and cases. 
 % \paragraph{Must-have}
 % \begin{itemize}
 % \item Evaluate on simple cases (ETA 3 $\sim$ 4 weeks)
@@ -44,9 +44,9 @@ The authors setup the experiments in a real-world setting: a cluster of 20 physi
   \hline
   Goals & Type & Estimated LOC & Timeline \\
   \hline
-  Reproduce one bug & \textit{\textbf{Must-have}} & N/A & Done\\ 
-  Run Panorama & \textit{\textbf{Must-have}} & N/A & Week1\\ 
-  Find the bug in Panorama & \textit{\textbf{Must-have}} & N/A & Week1 \\ 
+  Reproduce one bug & \textit{\textbf{Must-have}} & N/A & \textbf{Done}\\ 
+  Run Panorama & \textit{\textbf{Must-have}} & N/A & \textbf{Done}\\ 
+  Find the bug in Panorama & \textit{\textbf{Must-have}} & N/A & \textbf{Done} \\ 
   Test my system with the bug& \textit{\textbf{Must-have}} & N/A & Week4 \\ 
   Add more bugs& \textit{Might-have} & N/A & Week4 \\ 
   \hline

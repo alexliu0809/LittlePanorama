@@ -1,0 +1,74 @@
+\newpage
+%\pagestyle{standardpagestyle}
+%\thispagestyle{empty}
+\section{Evaluation}
+In this section, we evaluate LittlePanorama to answer the following four questions: (1) How efficient is LittleParorama? (2) Can LittlePanorama detect crash failures? (3) Can LittlePanorama detect gray failures? (4) Can LittlePanorama handle transient failures properly?
+
+We evaluate LittlePanorama on failures caused by 4 bugs listed in Table ~\ref{tab:failures}. The two bugs that crash leaders/followers are introduced artificially for the purpose of demonstration. The other two that result in gray failures are bugs found in production and used in the original paper. We evaluate these bugs in an ideal way --- triggering them manually instead of simulating a production workflow. The main constraint that limits us from evaluating LittlePanorama on more bugs or in a more complex setting is the time and effort needed. We pick bugs that are representative and easy to reproduce and test.
+
+\begin{table}[!tb]
+\begin{tabular}{p{0.24\columnwidth}p{0.60\columnwidth}p{0.06\columnwidth}}%{l|l|l}
+
+\toprule
+\textbf{BugId} & \textbf{Description} & \textbf{Gray} \\
+\midrule
+  artificial-01   &    An artificially injected bug that causes the leader to fail  &  No  \\
+ artificial-02      &   An artificially injected bug that causes the follower to fail  &  No  \\  
+zookeeper-2201      &   Zookeeper service becomes unavailable due to transient network partition &  Yes \\
+zookeeper-2247      &   Zookeeper service becomes unavailable when leader fails to write transaction log &  Yes \\
+\bottomrule
+\end{tabular}
+\vspace{0.5em}
+\caption{Bugs used in our experiments. Gray indicates whether the resultant failure is a gray failure or not.}
+\label{tab:failures}
+\end{table}
+
+
+\subsection{Experiment Setup}
+We use the VM provided to run all the experiments. This VM has a single-core 2.4 GHz Intel Xeon E5-2676 CPU, 1 GB of RAM and a 7.7 GB HVM disk. It runs Ubuntu 18.04 LTS (Bionic Beaver). We also modify the source code of Zookeeper version 3.4.6 to introduce hooks and artificial bugs. We evaluate LittlePanorama with a three-node Zookeeper ensemble listening on different ports.
+
+\subsection{Performance}
+\subsubsection{Reporting Speed} Table ~\ref{tab:microbench} shows the average latency of reporting an observation in LittlePanorama and Panorama respectively. Two things can be observed here. First, reporting an observation is cheap, as the average latency is less than 1 ms. This is because reporting an observation only incurs a local RPC. Second, LittlePanorama is about 3x faster than Panorama in terms of reporting speed. We attribute LittlePanorama's performance gain to the fact that it implements a much simpler datastructure and saves everything in memory.
+
+\begin{table}[!tb]
+\begin{tabular}{p{0.24\columnwidth}p{0.33\columnwidth}p{0.33\columnwidth}}%{l|l|l}
+
+\textbf{Operation} & \textbf{Panorama} & \textbf{LittlePanorama} \\
+\midrule
+  Report   &    753 $\mu$s  &  194 $\mu$s  \\
+\end{tabular}
+\vspace{0.5em}
+\caption{Average speed of reporting an observation (Report)}
+\label{tab:microbench}
+\end{table}
+
+\subsubsection{Judging Speed} Figure ~\ref{fig:judge} plots the average judging speed of LittlePanorama and Panorama with varying number of observations. LittlePanorama's performance degrades as the number of observations increases, as in the worst case it would examine all observations. However, Panorama does not have this problem. After a close inspection of Panorama's source code, we realize that this performance stability is due to the fact that Panorama only considers the two most recent observations. The original paper refers to this behavior as \textit{bounded-look-back}.
+
+\begin{figure}[!tb]
+\centering
+\includegraphics[scale=0.4]{figs/inference.pdf}
+\vspace{-1em}
+\caption{Judging Speed
+\label{fig:judge}
+}
+\end{figure}
+
+\subsubsection{Propagation Speed} Figure ~\ref{fig:propagation} graphs the average delay of propagating one observation to all peers with various peer sizes. The propagation delay in both cases is proportional to the number of peers, matching what is reported in the original paper. However, looking at Panorama's source code, it seems that the authors have parallelized the process of propagation, which in theory should give a better performance. Unfortunately, we fail to observe any improvement. Our benchmark code is carefully examined such that the probability of this phenomenon caused by a bug in our code is low. Another possible explanation is that the CPU used in our experiments only has one core, burying the performance gain of thread-level parallelism.
+
+\begin{figure}[!tb]
+\centering
+\includegraphics[scale=0.4]{figs/propagation.pdf}
+\vspace{-1em}
+\caption{Propagation Speed
+\label{fig:propagation}
+}
+\end{figure}
+
+\subsection{Detection of Crash Failures}
+place holder
+
+\subsection{Detection of Gray Failures}
+place holder
+
+\subsection{Transient Failure, Normal Operations}
+place holder

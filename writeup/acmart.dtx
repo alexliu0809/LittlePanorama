@@ -5056,13 +5056,13 @@ Computing Machinery]
     \fancyhead[LE]{\ACM@linecountL\if@ACM@printfolios\thepage\fi}%
     \fancyhead[RO]{\if@ACM@printfolios\thepage\fi}%
     \fancyhead[RE]{\@shortauthors}%
-    \fancyhead[LO]{\ACM@linecountL\shorttitle}%
+%%%%%\fancyhead[LO]{\ACM@linecountL\shorttitle}%
     \fancyfoot[RO,LE]{\footnotesize Manuscript submitted to ACM}%
   \or % acmsmall
     \fancyhead[LE]{\ACM@linecountL\@headfootfont\@acmArticle\if@ACM@printfolios:\thepage\fi}%
     \fancyhead[RO]{\@headfootfont\@acmArticle\if@ACM@printfolios:\thepage\fi}%
     \fancyhead[RE]{\@headfootfont\@shortauthors}%
-    \fancyhead[LO]{\ACM@linecountL\@headfootfont\shorttitle}%
+    %\fancyhead[LO]{\ACM@linecountL\@headfootfont\shorttitle}%
     \fancyfoot[RO,LE]{\footnotesize \@journalName, Vol. \@acmVolume, No.
     \@acmNumber, Article \@acmArticle.  Publication date: \@acmPubDate.}%
   \or % acmlarge
@@ -5084,12 +5084,13 @@ Computing Machinery]
     \@acmNumber, Article \@acmArticle.  Publication date: \@acmPubDate.}%
   \else % Proceedings
     \fancyfoot[C]{\if@ACM@printfolios\footnotesize\thepage\fi}%
-    \fancyhead[LO]{\ACM@linecountL\@headfootfont\shorttitle}%
-    \fancyhead[RE]{\@headfootfont\@shortauthors\ACM@linecountR}%
+%%%%%\fancyhead[LO]{\ACM@linecountL\@headfootfont\shorttitle}%
+%%%%%\fancyhead[RE]{\@headfootfont\@shortauthors\ACM@linecountR}%
     \fancyhead[LE]{\ACM@linecountL\@headfootfont\acmConference@shortname,
       \acmConference@date, \acmConference@venue}%
-    \fancyhead[RO]{\@headfootfont\acmConference@shortname,
+    \fancyhead[LO]{\@headfootfont\acmConference@shortname,
       \acmConference@date, \acmConference@venue\ACM@linecountR}%
+    %\fancyhead[RO]{\@headfootfont\@shortauthors}%
   \fi
   \if@ACM@sigchiamode
      \fancyheadoffset[L]{\dimexpr(\marginparsep+\marginparwidth)}%

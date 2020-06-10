@@ -1,15 +1,29 @@
 \section{Preliminary Progress}
-We have made some initial progress setting up the testing environment and reproducing one test case to ensure that our end goal is achievable. First, we contacted Ryan, who is the lead author of panorama, and received practical advice from them. Following Ryan's suggestions, we succeeded in reproducing one important but easy to set up bug in the Zookeeper \cite{httpsiss99:online}. We now are fairly confident that we would be able to have real cases to evaluate. We detail our progress below.
-\subsection{Acquiring Test Cases Used in the Paper}
-On Thursday, I sent an email to Ryan Huang at JHU asking for test cases he used in the paper. Fortunately, Ryan was kind enough to respond to my email and attach a few simple test cases he used in the paper. ZOOKEEPER-2201 is one of them \cite{httpsiss99:online}. It is a subtle gray failure bug found in Zookeeper version 3.4.6 and 3.5.0. Ryan indicated that this bug might be one of the easiest bugs to reproduce. Thus, we worked on this one first.
-\subsection{Setting Up Zookeeper Ensemble}
-We set up a three-server Zookeeper ensemble on the EC2 VM provided to us. First, we downloaded the source code of Zookeeper version 3.4.6 and made a customized version of it. Next, we deployed three Zookeeper servers listening on different ports, forming a Zookeeper ensemble.
+With some engineering effort, we are able to reproduce ZOOKEEPER-2201 ~\cite{httpsiss99:online}, a gray failure bug evaluated in the paper, and set up a testing environment. We detail how we reproduce ZOOKEEPER-2201 in Section ~\ref{ssec:rob} and set up the testing environment in Section ~\ref{ssec:ste}.
+
 \subsection{Reproducing ZOOKEEPER-2201}
-\label{subsec:rbug}
+\label{ssec:rob}
+The original Panorama paper did not have references to the bugs used. Thus, 
+the first thing we did was to acquire the list of bugs evaluated in the paper. We contacted Ryan, who is the lead author of panorama, and were fortunate to hear back from him. In his correspondence with us, he not only included links to a subset of bugs used in the paper but also indicated which ones were easy to start with. ZOOKEEPER-2201 ~\cite{httpsiss99:online} is among the easy ones. It is a subtle gray failure bug found in Zookeeper version 3.4.6 and 3.5.0. Since we read the Zookeeper paper in this class, we decided to focus on this one first.
+
 Reproducing ZOOKEEPER-2201 in a real-world setting is nontrivial. We have two issues there. First, we would face great difficulty simulating a real-world scenario, which requires a 20-node cluster plus GBs of data. Second, Ryan noted in his correspondence with us that faults typically need to be injected at careful timing in a real environment. Neither of these two issues could be resolved in a tractable amount of time. 
 
-That being said, there is one thing we could do here. Our insight here is that we do not have to be in a real-world situation to trigger ZOOKEEPER-2201. ZOOKEEPER-2201 is reported and fixed in 2015. Along with fixing the bug, the maintainers also attached a test case that examined this specific bug. In that test case, they intentionally introduced a buggy function that would trigger ZOOKEEPER-2201 if it were not fixed. This is convenient for us: we can just use this function to trigger ZOOKEEPER-2201. As we previously noted, we modified the Zookeeper source code and injected this function. We could control when this function is called, and thus controlling when this bug is triggered. 
-\subsection{Future Plan on Configuring Test Cases}
-As I am now working alone on this project, I am envisioning that I would only test my code on one or two bugs in Zookeeper, which I have already setup on my EC2 VM.
+That being said, there is one thing we could do. Our insight here is that we do not have to be in a real-world situation to trigger ZOOKEEPER-2201. ZOOKEEPER-2201 was reported and fixed in 2015. Along with fixing the bug, the maintainers attached a test case that examined this specific bug. In that test case, they intentionally introduced a buggy function that would trigger ZOOKEEPER-2201 if it were not fixed. This is convenient for us: we can just use this function to trigger ZOOKEEPER-2201. 
 
-However, being able to trigger a bug is not good enough. We want to make sure that Panorama could detect it and use Panorama as an oracle to test against my implementation of Panorama. To achieve this, two issues need to be addressed. On the one hand, obviously, we need to get Panorama server running. On the other hand, we need to inject code into Zookeeper server so that it could report anything it observes to Panorama server. These two issues are the prerequisite for Panorama to be able to detect any bug. I plan to work on these two issues in the upcoming week.
+We first added this function to Zookeeper's source code. We then verified that a call to this function would trigger ZOOKEEPER-2201. Finally, we need to determine when and how to call this function. We decided that whenever a client sent a request to set the data at node \textit{/n3}, we would call the buggy function, and thus triggering ZOOKEEPER-2201. Now we have successfully reproduced ZOOKEEPER-2201 and could control when it would be triggered.
+
+
+\subsection{Setting Up the Testing Environment}
+\label{ssec:ste}
+To test our code, we need to configure, compile and run Zookeeper and a Panorama server. In addition to that, we also need to injects hooks to Zookeeper such that it could report observations to the Panorama server. We achieved all these with moderate effort. We set up a three-server Zookeeper ensemble on the EC2 VM provided to us. The three Zookeeper servers are running on the same machine listening to three different ports. We then install the necessary dependencies and run the Panorama server. The Panorama server is listening on another port for observations. Whenever a network error occurred, either detected by the Zookeeper client or the Zookeeper server, it would be reported to the Panorama server through that port. 
+
+\subsection{Detecting ZOOKEEPER-2201}
+We are now ready to detect ZOOKEEPER-2201. We first trigger ZOOKEEPER-2201 by asking a client to set data at node \textit{n3}. After this, the leader will stop responding to clients. However, it would still exchange heartbeat messages with its peers --- the other two Zookeeper servers. So in this case,
+a client would report to our Panorama server that the leader is having network issues, while a peer Zookeeper server would report no error on the leader's network connectivity. The Panorama server uses majority vote to determine the status of a subject. In our case, because two peer Zookeeper servers are reporting no error on the leader's connection, we need at least three clients to report error on the leader's connection. This can be done trivially. Finally, we confirm that the Panorama server could detect the network error if we have at least three clients reporting errors.
+
+%   Following Ryan's suggestions, we are successful in reproducing one important bug in the Zookeeper server\cite{httpsiss99:online}. Next, we set up a three-server Zookeeper ensemble on our EC2 machine. Then we managed to 
+
+% Below we detail our progress
+
+% We first  Next, we install all the dependencies needed to run the authors' implementation of Panorama server. Finally, we artificially injected one bug to Zookeeper.
+
