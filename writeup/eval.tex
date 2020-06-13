@@ -1,4 +1,5 @@
 \newpage
+\newpage
 %\pagestyle{standardpagestyle}
 %\thispagestyle{empty}
 \section{Evaluation}
@@ -42,7 +43,7 @@ We use the VM provided to run all the experiments. This VM has a single-core 2.4
 \label{tab:microbench}
 \end{table}
 
-\subsubsection{Judging Speed} Figure ~\ref{fig:judge} plots the average judging speed of LittlePanorama and Panorama with varying number of observations. LittlePanorama's performance degrades as the number of observations increases, as in the worst case it would examine all observations. However, Panorama does not have this problem. After a close inspection of Panorama's source code, we realize that this performance stability is due to the fact that Panorama only considers the two most recent observations. The original paper refers to this behavior as \textit{bounded-look-back}.
+\subsubsection{Judging Speed\label{subsubsec:js}} Figure ~\ref{fig:judge} plots the average judging speed of LittlePanorama and Panorama with varying number of observations. LittlePanorama's performance degrades as the number of observations increases, as in the worst case it would examine all observations. However, Panorama does not have this problem. After a close inspection of Panorama's source code, we realize that this performance stability is due to the fact that Panorama only considers the two most recent observations. The original paper refers to this behavior as \textit{bounded-look-back}.
 
 \begin{figure}[!tb]
 \centering
@@ -65,10 +66,100 @@ We use the VM provided to run all the experiments. This VM has a single-core 2.4
 \end{figure}
 
 \subsection{Detection of Crash Failures}
-place holder
+Both Panorama and LittlePanorama are designed to detect complex real-world failures. Detecting simple crash failures can serve as a sanity check on the capability of both systems. We inject two crash failures bugs --- artificial-01 and artificial-02, which will crash leader and follower respectively when triggered. Table ~\ref{tab:crashperf} shows the detection time. We see that it takes less than 200 ms to detect both failures, matching the results ($\sim$10 ms) reported in the original paper. Further, we observe little difference in performance between LittlePanorama and Panorama.
 
-\subsection{Detection of Gray Failures}
-place holder
+\begin{table}[!tb]
+\begin{tabular}{p{0.24\columnwidth}p{0.33\columnwidth}p{0.33\columnwidth}}%{l|l|l}
+
+\toprule
+ & \textbf{Panorama} & \textbf{LittlePanorama} \\
+\midrule
+  artificial-01    &    128 ms  &  138 ms  \\
+  artificial-02       &   81 ms   &  45 ms \\
+\bottomrule
+\end{tabular}
+\vspace{0.5em}
+\caption{Detection time for crash failures}
+\label{tab:crashperf}
+\end{table}
+
+\subsection{Detection time for gray failures}
+Being able to detect complex gray failures is one of the keys goals. To evaluate both systems' ability to detect gray failures, we reuse two gray failures from the original paper. They are real-world production failures found in ZooKeeper. Both of them would cause the ZooKeeper service to be temporarily unavailable but not crashing any ZooKeeper server. Table ~\ref{tab:grayperf} shows detection time. The detection times have a minimum of 0.2 s and a maximum of 7 s. We 
+
+\begin{table}[!tb]
+\begin{tabular}{p{0.24\columnwidth}p{0.33\columnwidth}p{0.33\columnwidth}}%{l|l|l}
+
+\toprule
+ & \textbf{Panorama} & \textbf{LittlePanorama} \\
+\midrule
+  zookeeper-2201    &   66850 ms   &  67038 ms \\
+  zookeeper-2247    &   2632 ms    &  2195 ms  \\
+\bottomrule
+\end{tabular}
+\vspace{0.5em}
+\caption{Detection time for gray failures}
+\label{tab:grayperf}
+\end{table}
 
 \subsection{Transient Failure, Normal Operations}
-place holder
+blahblah Figure ~\ref{fig:transient}.
+
+\begin{figure}[!tb]
+\centering
+\includegraphics[scale=0.4]{figs/transient.pdf}
+\vspace{-1em}
+\caption{Transient Failure
+\label{fig:transient}
+}
+\end{figure}
+
+%%%
+% Creating Testing Environment For Leader Failure
+% Time To Detect Leader Failure: 128 ms
+
+% Creating Testing Environment For Follower Failure
+% Time To Detect Follower Failure: 81 ms
+
+% Creating Testing Environment For Gray Failure 1
+% Setting up nodes
+% Setting up regular connections from clients
+% Triggering gray 1
+% Time To Detect Gray Failure 1: 66850 ms
+
+% Creating Testing Environment For Gray Failure 2
+% Triggering gray 2
+% Time To Detect Gray Failure 2: 2632 ms
+
+% Creating Testing Environment For Coming Back
+% Setting up nodes
+% Setting up regular connections from clients
+% Triggering gray 1
+% Time To Detect Failure: 66881 ms
+% Start Pulling Again From Clients
+% Time To Detect Revival: 125774 ms
+
+
+%%% 
+% Creating Testing Environment For Leader Failure
+% Time To Detect Leader Failure: 138 ms
+
+% Creating Testing Environment For Follower Failure
+% Time To Detect Follower Failure: 45 ms
+
+% Creating Testing Environment For Gray Failure 1
+% Setting up nodes
+% Setting up regular connections from clients
+% Triggering gray 1
+% Time To Detect Gray Failure 1: 67038 ms
+
+% Creating Testing Environment For Gray Failure 2
+% Triggering gray 2
+% Time To Detect Gray Failure 2: 2195 ms
+
+% Creating Testing Environment For Coming Back
+% Setting up nodes
+% Setting up regular connections from clients
+% Triggering gray 1
+% Time To Detect Failure: 66584 ms
+% Start Pulling Again From Clients
+% Time To Detect Revival: 125607 ms
