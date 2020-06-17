@@ -1,0 +1,11 @@
+*.swp
+build/
+target/
+hs.cfg
+deephealth.out
+deephealth.pid
+deephealth.db
+deephealth.db-journal
+logtail.log
+logtail.err
+memusage.csv
