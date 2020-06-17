@@ -1,2 +1,80 @@
-\section{Reproduce Bugs For Evaluation}
+\section{Creating Failures}
 \label{sec:reproducebugs}
+A key prerequisite for evaluation is to create failures so that LittlePanorama could be used to detect them. There are two possible ways to do it. One is to inject artificial bugs that create certain failures. For example, we could inject some buggy code that would crash a system. The other is to leverage existing bugs in the system. As an example, consider a program that dereference a pointer without checking whether it is null or not. We could trigger an exception by either crafting an input that sets the pointer to null or running a production workflow with the hope that the pointer would be set to null. The former approach is easy to achieve while the latter models real-world scenarios better. The latter is also orders of magnitude harder. First, one needs to identify bugs in existing systems. Second, one must be able to trigger those bugs, ideally in a production workflow and in a deterministic fashion. Finally, our project adds another layer of complexity here: we want the bugs to cause gray failures. 
+
+To keep our project in a manageable scope, we create failures in a hybrid manner. We first inject two artificial crash failures for ZooKeeper. For gray failures, we want to leverage existing gray failures instead of creating our own. We are also in favor of bugs that are representative and easy to create and test. Sadly, the original Panorama paper do not have references to the bugs they used. Thus, the first thing we do is to acquire the list of bugs evaluated in the paper. We contact Ryan, who is the lead author of panorama, and are fortunate to hear back from him. In his correspondence with us, he not only includes links to a subset of bugs used in the paper but also indicates which ones are easy to start with. ZOOKEEPER-2201 ~\cite{httpsiss99:online} is among the easy ones. Since we read the Zookeeper paper in this class, we decided to focus on this one first. After some search on the Internet, we are lucky enough to identify another gray failure bug --- ZOOKEEPER 2247 ~\cite{ZOOKEEPER2247:online}. Both bugs are used in the original paper. In total, we have created four failures, listed in Table ~\ref{tab:failures}. 
+
+Below we provide more detail on how they are created and triggered.
+
+\begin{table}[!tb]
+\begin{tabular}{p{0.24\columnwidth}p{0.60\columnwidth}p{0.06\columnwidth}}%{l|l|l}
+
+\toprule
+\textbf{BugId} & \textbf{Description} & \textbf{Gray} \\
+\midrule
+    artificial-01   &    An artificially injected bug that causes the leader to fail  &  No  \\
+    artificial-02      &   An artificially injected bug that causes the follower to fail  &  No  \\  
+zookeeper-2201      &   Zookeeper service becomes unavailable due to transient network partition &  Yes \\
+zookeeper-2247      &   Zookeeper service becomes unavailable when leader fails to write transaction log &  Yes \\
+\bottomrule
+\end{tabular}
+\vspace{0.5em}
+\caption{Bugs used in our experiments. Gray indicates whether the resultant failure is a gray failure or not.}
+\label{tab:failures}
+\end{table}
+
+\subsection{Artificial Crash Failures}
+We introduce two artificial crash failures, \textit{artificial-01} and \textit{artificial-02}, which would crash ZooKeeper leader and follower respectively when triggered. As previously stated, injecting and triggering artificial failures are easy. Creating crash failure is even easier. In fact, we do not explicitly inject any code to ZooKeeper. Instead, we simulate the crash failure of a program by terminating it with linux command \textit{kill}. Once a subject is killed, other observers that are interacting with it should observe its failure and report to LittlePanorama server. We verify that this is case later in Section ~\ref{sec:eval}.
+
+
+\subsection{ZOOKEEPER-2201}
+\label{ssec:rob}
+\subsubsection{Description}
+ZOOKEEPER-2201 ~\cite{httpsiss99:online} is a bug that affects ZooKeeper version 3.4.6 and 3.5.0. It can cause the entire cluster to hang for 15 minutes on Linux.  During this time, any attempt to create/delete/modify data will hang. Also, because the ping packets that leader exchanges with followers are sent by another thread which is unaffected, followers never time out and become leader, even though the cluster will make no progress. It is a perfect gray failure bug for us to evaluate. 
+
+\subsubsection{Triggering}
+\label{subsubsec:2201trigger}
+In a real-world setting, ZOOKEEPER-2201 can be triggered by injecting a network partition. However, triggering it in a production setting is nontrivial. We have two issues there. First, we would face great difficulty simulating a real-world scenario, which requires a 20-node cluster plus GBs of data. Second, introducing network partition does not guarantee that ZOOKEEPER-2201 would be triggered. We would need to inject network partition at a careful timing. In fact, it is typically that faults need to be injected at careful timing in a real environment to trigger a failure, as Ryan notes in his correspondence with us. Clearly, neither of these two issues could be resolved in a tractable amount of time. We have to find another solution.
+
+Fortunately, there is one thing we could do. Our insight here is that we do not have to be in a real-world situation to trigger ZOOKEEPER-2201. ZOOKEEPER-2201 was reported and fixed in 2015. Along with fixing the bug, the maintainers attached a test case that examined this specific bug. In that test case, they intentionally introduced a buggy function that would trigger ZOOKEEPER-2201 if it were not fixed. This is convenient for us: we can just use this function to trigger ZOOKEEPER-2201. 
+
+We first add this function to Zookeeper's source code. We then verify that a call to this function would trigger ZOOKEEPER-2201. Finally, we need to determine when and how to call this function. We decide that whenever a client sent a request to create the data at node \textit{/gray1}, we would invoke the injected buggy function, and thus triggering ZOOKEEPER-2201. 
+
+Now we have successfully triggered ZOOKEEPER-2201 and could also control when it would be triggered. 
+
+\subsubsection{Detection}
+\label{subsubsec:2201detection}
+We are now ready to detect ZOOKEEPER-2201. We first trigger it by asking a client to create data at node \textit{/gray1}. After this, the leader will hang and stop responding to clients. However, it would still exchange heartbeat messages with its peers --- the other Zookeeper servers. This means its peers would report to our LittlePanorama server that the Leader is healthy.
+
+We now need some help from ZooKeeper clients. Since the leader is hanging, any connection established by a client to the leader will timeout, informing the client that the leader is having some issues. Thus, in this case, a client would observe and report to our LittlePanorama server that the leader is having network issues, while a peer Zookeeper server would report no error on the leader's network connectivity. Also, since our LittlePanorama server uses a majority vote algorithm to determine the status of a subject, we would need at least as many clients as peer ZooKeeper servers. For example, if there are two peer Zookeeper servers, we need at least two clients to report error on the leader's network connection. This can be done trivially. Finally, we confirm that our LittlePanorama server could detect the network error in Section ~\ref{sec:eval}.
+
+\subsection{ZOOKEEPER-2247}
+
+\subsubsection{Description}
+ZOOKEEPER-2247 ~\cite{ZOOKEEPER2247:online} is a bug that affects ZooKeeper version 3.5.0. It makes ZooKeeper service unavailable for a short period of time. During this time, leader has failed, yet still remaining the leader. Because leader has failed, any request from clients trying to create/delete/modify data would fail. Other peer servers would also be able to sense that the leader has failed when exchanging heartbeat with it.
+
+\subsubsection{Triggering}
+We use the same approach described in Section ~\ref{subsubsec:2201trigger}.
+We find the relevant test function that triggers ZOOKEEPER-2247. We add this function to Zookeeper's source code with minor changes. We then verify that a call to this function would trigger ZOOKEEPER-2247. Finally, we decide that whenever a client sent a request to create the data at node \textit{/gray2}, we would invoke the injected buggy function, and thus triggering ZOOKEEPER-2247. 
+
+Now we have successfully triggered ZOOKEEPER-2247 and could also control when it would be triggered. 
+
+\subsubsection{Detection}
+Detecting ZOOKEEPER-2247 is much easier than that of ZOOKEEPER-2201. Since the leader has failed, both peers ZooKeeper servers and clients would be able observe its failure. We just need a client to trigger it.
+
+
+\subsection{A Bonus Failure}
+\label{subsec:intermittent}
+As mentioned in Section ~\ref{ssec:rob}, ZOOKEEPER-2201 would cause the entire cluster to hang for a certain period of time, and then the cluster would get back to normal. Lucky enough, we find a variable that allows us to control how long the cluster would hang. This gives us the ability to test another type of failure: intermittent failure. An example of intermittent failure is when a subject goes from healthy to unhealthy and then come back to healthy. We evaluate LittlePanorama on intermittent failure in Section ~\ref{sec:eval}.
+%   Following Ryan's suggestions, we are successful in reproducing one important bug in the Zookeeper server\cite{httpsiss99:online}. Next, we set up a three-server Zookeeper ensemble on our EC2 machine. Then we managed to 
+
+% Below we detail our progress
+
+% We first  Next, we install all the dependencies needed to run the authors' implementation of Panorama server. Finally, we artificially injected one bug to Zookeeper.
+
+%   Following Ryan's suggestions, we are successful in reproducing one important bug in the Zookeeper server\cite{httpsiss99:online}. Next, we set up a three-server Zookeeper ensemble on our EC2 machine. Then we managed to 
+
+% Below we detail our progress
+
+% We first  Next, we install all the dependencies needed to run the authors' implementation of Panorama server. Finally, we artificially injected one bug to Zookeeper.
+
