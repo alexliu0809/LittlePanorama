@@ -11,14 +11,14 @@ import "health.proto";
 service HealthService{
 
   // Add a subject to the observing subject list
-  //rpc Observe(ObserveRequest) returns (ObserveReply) {}
+  rpc Observe(ObserveRequest) returns (ObserveReply) {}
 
 	// Stop observing a particular subject, all the reports
 	// concerning this subject will be ignored
-  //rpc StopObserving(ObserveRequest) returns (ObserveReply) {}
+  rpc StopObserving(ObserveRequest) returns (ObserveReply) {}
 
   // Learn a report from a peer 
-  //rpc LearnReport(LearnReportRequest) returns (LearnReportReply) {}
+  rpc LearnReport(LearnReportRequest) returns (LearnReportReply) {}
 
   // Register a local observer to the health service.
   // Must be called before SubmitReport.
@@ -40,13 +40,13 @@ service HealthService{
   rpc GetInference(GetInferenceRequest) returns (Inference) {}
 
   // Query the list of all subjects that have been observed
-  // rpc GetObservedSubjects(Empty) returns (GetObservedSubjectsReply) {}
+  rpc GetObservedSubjects(Empty) returns (GetObservedSubjectsReply) {}
 
   // Dump all the raw health reports about all observed entities
-  // rpc DumpPanorama(Empty) returns (DumpPanoramaReply) {}
+  rpc DumpPanorama(Empty) returns (DumpPanoramaReply) {}
 
   // Dump all the inferred health reports about all observed entities
-  // rpc DumpInference(Empty) returns (DumpInferenceReply) {}
+  rpc DumpInference(Empty) returns (DumpInferenceReply) {}
 
   // Receive a ping from a client
   rpc Ping(PingRequest) returns (PingReply) {}
@@ -123,4 +123,44 @@ message PingReply {
   }
   Status result = 1;
   google.protobuf.Timestamp time = 2; 
+}
+
+message GetObservedSubjectsReply {
+  map<string, google.protobuf.Timestamp> subjects = 1;
+}
+
+message DumpPanoramaReply {
+  map<string, Panorama> panoramas = 1;
+}
+
+message DumpInferenceReply {
+  map<string, Inference> inferences = 1;
+}
+
+message LearnReportRequest {
+  enum Kind {
+    NORMAL = 0; // a normal learn request
+    SUBSCRIPTION = 1; // this is a subscription request, ignore report content
+    UNSUBSCRIPTION = 2; // this is an unsubscription request, ignore report content
+  }
+  Kind kind = 1;
+  Peer source = 2;
+  Report report = 3;
+}
+
+message LearnReportReply {
+  enum Status {
+    IGNORED = 0;
+    ACCEPTED = 1;
+    FAILED = 2;
+  }
+  Status result = 1;
+}
+
+message ObserveRequest {
+  string subject = 1;
+}
+
+message ObserveReply {
+  bool success = 1;
 }

@@ -91,7 +91,6 @@ func BenchmarkGetInference400(b *testing.B)  { benchmarkGetInference(400, b) }
 func BenchmarkGetInference800(b *testing.B) { benchmarkGetInference(800, b) }
 func BenchmarkGetInference1600(b *testing.B) { benchmarkGetInference(1600, b) }
 func BenchmarkGetInference3200(b *testing.B) { benchmarkGetInference(3200, b) }
-func BenchmarkGetInference6400(b *testing.B) { benchmarkGetInference(6400, b) }
 
 /***** A base function that allows you to vary the number of clients *****/
 func benchmarkPropagate(num_peers int ,b *testing.B){

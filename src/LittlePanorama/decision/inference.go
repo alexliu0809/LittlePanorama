@@ -77,6 +77,10 @@ func Inference(in *pb.Panorama) *pb.Inference{
 				max_cnt = status_count
 				max_status = status_name
 				max_score = status_score
+			} else if status_count == max_cnt && status_name > max_status{
+				max_cnt = status_count
+				max_status = status_name
+				max_score = status_score
 			}
 		}
 		avg_max_score := max_score / float32(max_cnt)
