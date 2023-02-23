@@ -1,3 +1,5 @@
+# github.com/fsnotify/fsnotify v1.6.0
+## explicit
 # github.com/golang/protobuf v1.2.0
 ## explicit
 github.com/golang/protobuf/proto
@@ -16,7 +18,7 @@ github.com/hpcloud/tail/winfile
 # github.com/mattn/go-sqlite3 v1.10.0
 ## explicit
 github.com/mattn/go-sqlite3
-# golang.org/x/net v0.0.0-20181106065722-10aee1819953
+# golang.org/x/net v0.0.0-20220722155237-a158d28d115b
 ## explicit
 golang.org/x/net/context
 golang.org/x/net/http/httpguts
@@ -25,10 +27,10 @@ golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
-# golang.org/x/sys v0.0.0-20181206074257-70b957f3b65e
-## explicit
+# golang.org/x/sys v0.0.0-20220908164124-27713097b956
+golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
-# golang.org/x/text v0.3.0
+# golang.org/x/text v0.3.8
 ## explicit
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
