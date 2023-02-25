@@ -1,3 +1,5 @@
+# github.com/fsnotify/fsnotify v1.6.0
+## explicit
 # github.com/golang/protobuf v1.2.0
 ## explicit
 github.com/golang/protobuf/proto
@@ -25,11 +27,10 @@ golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
-# golang.org/x/sys v0.0.0-20181206074257-70b957f3b65e
+# golang.org/x/sys v0.1.0
 ## explicit
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.0
-## explicit
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
